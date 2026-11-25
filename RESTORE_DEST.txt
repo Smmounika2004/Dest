@@ -1,0 +1,14 @@
+from pathlib import Path
+import base64
+import hashlib
+
+folder = Path(__file__).resolve().parent
+source = folder / "DEST_BASE64.txt"
+output = folder / "DEST.7z"
+data = base64.b64decode(source.read_bytes(), validate=True)
+if hashlib.sha256(data).hexdigest() != "0ac52f42ed1c683b83bafe43212d7fb06a38eb18100b837cfb25f27bd3877c21":
+    raise ValueError("File verification failed. Download the TXT again.")
+if output.exists() and output.read_bytes() != data:
+    raise FileExistsError("DEST.7z already exists with different contents.")
+output.write_bytes(data)
+print("Restored and verified:", output)
